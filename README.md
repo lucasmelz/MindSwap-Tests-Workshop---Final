@@ -12,7 +12,7 @@
 `docker exec -it myPostgresDb bash`
 
 
-4. Execute PostgreSQL with super user privileges:<br>
+4. Execute PostgreSQL with the role "user"<br>
 `psql postgresDB -U user`
 
 
