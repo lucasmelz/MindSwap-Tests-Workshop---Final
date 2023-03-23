@@ -44,7 +44,6 @@ public class StudentIT {
     private final Faker faker = new Faker();
 
     @Test
-    @Disabled
     void canRegisterNewStudent() throws Exception {
         // given
         String name = String.format(
@@ -74,7 +73,6 @@ public class StudentIT {
     }
 
     @Test
-    @Disabled
     void canDeleteStudent() throws Exception {
         // given
         String name = String.format(
@@ -97,28 +95,26 @@ public class StudentIT {
                 .content(objectMapper.writeValueAsString(student)))
                 .andExpect(status().isOk());
 
-        MvcResult getStudentsResult = mockMvc.perform(get("/api/v1/students")
-                .contentType(MediaType.APPLICATION_JSON))
+
+        MvcResult getStudentResult = mockMvc.perform(get("/api/v1/students/getByEmail?email=" + email)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String contentAsString = getStudentsResult
+        String contentAsString = getStudentResult
                 .getResponse()
                 .getContentAsString();
 
-        List<Student> students = objectMapper.readValue(
+        Student studentReceived = objectMapper.readValue(
                 contentAsString,
                 new TypeReference<>() {
                 }
         );
 
-        long id = students.stream()
-                .filter(s -> s.getEmail().equals(student.getEmail()))
-                .map(Student::getId)
-                .findFirst()
-                .orElseThrow(() ->
-                        new IllegalStateException(
-                                "student with email: " + email + " not found"));
+        if (studentReceived==null){
+            throw new IllegalStateException("student with email: " + email + " not found");
+        }
+        long id = studentReceived.getId();
 
         // when
         ResultActions resultActions = mockMvc
