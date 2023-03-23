@@ -61,6 +61,23 @@ class StudentServiceTest {
     }
 
     @Test
+    void willThrowWhenEmailIsInvalid() {
+        // given
+        Student student = new Student(
+                "Jamila",
+                "jamilagmail.com",
+                Gender.FEMALE
+        );
+        // when
+        // then
+        assertThatThrownBy(() -> underTest.addStudent(student))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("Email " + student.getEmail() + " invalid");
+
+        verify(studentRepository, never()).save(any());
+    }
+
+    @Test
     void willThrowWhenEmailIsTaken() {
         // given
         Student student = new Student(

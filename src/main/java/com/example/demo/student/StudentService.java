@@ -3,6 +3,7 @@ package com.example.demo.student;
 import com.example.demo.student.exception.BadRequestException;
 import com.example.demo.student.exception.StudentNotFoundException;
 import lombok.AllArgsConstructor;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,11 +19,18 @@ public class StudentService {
     }
 
     public void addStudent(Student student) {
+
+        EmailValidator emailValidator = EmailValidator.getInstance();
+
         Boolean existsEmail = studentRepository
                 .selectExistsEmail(student.getEmail());
         if (existsEmail) {
             throw new BadRequestException(
                     "Email " + student.getEmail() + " taken");
+        }
+        if(!emailValidator.isValid(student.getEmail())){
+            throw new BadRequestException(
+                    "Email " + student.getEmail() + " invalid");
         }
 
         studentRepository.save(student);
